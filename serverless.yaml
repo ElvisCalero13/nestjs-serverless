@@ -25,6 +25,7 @@ provider:
       NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
       # ONLY TO LOCAL
       DYNAMODB_ENDPOINT: ${self:custom.endpoints.dynamodbURL}
+      #
     iam: 
       role: 
         statements: 
@@ -60,7 +61,7 @@ custom:
     # ONLY TO LOCAL
     endpoints:
       dynamodbURL: 'http://localhost:6000'
-    
+    #
     optimize:
         external: ['swagger-ui-dist']
 

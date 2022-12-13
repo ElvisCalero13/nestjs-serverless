@@ -81,7 +81,7 @@ export class StudentService {
     }
   }
 
-  async remove(id: string): Promise<any> {
+  async remove(id: string): Promise<Student | any> {
     try {
       const obj = await this.findOne(id);
       await dynamoDB
