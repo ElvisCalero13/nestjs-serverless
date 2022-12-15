@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   HttpException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -15,7 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
-  ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiSecurity,
   ApiTags,
@@ -33,46 +35,68 @@ export class StudentController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Server error' })
   @Post()
-  create(
+  async create(
     @Body() createStudentDto: CreateStudentDto,
   ): Promise<Student | HttpException> {
-    return this.studentService.create(createStudentDto);
+    const student = await this.studentService.create(createStudentDto);
+    if (!student) {
+      throw new BadRequestException('Student not created');
+    }
+    return student;
   }
 
   @ApiOkResponse({ description: 'Students found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Students not founds' })
   @ApiInternalServerErrorResponse({ description: 'Server error' })
   @Get()
-  findAll(): Promise<Student[] | HttpException> {
-    return this.studentService.findAll();
+  async findAll(): Promise<Student[] | HttpException> {
+    const students = await this.studentService.findAll();
+    const count = Object.keys(students).length;
+    if (count == 0) {
+      throw new NotFoundException('Students not founds');
+    }
+    return students;
   }
 
   @ApiOkResponse({ description: 'Student found' })
-  @ApiNoContentResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiInternalServerErrorResponse({ description: 'Server error' })
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Student | HttpException> {
-    return this.studentService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<Student | HttpException> {
+    const student = await this.studentService.findOne(id);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student;
   }
 
   @ApiOkResponse({ description: 'Student updated' })
-  @ApiNoContentResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiInternalServerErrorResponse({ description: 'Server error' })
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ): Promise<Student | HttpException> {
-    return this.studentService.update(id, updateStudentDto);
+    const student = await this.studentService.update(id, updateStudentDto);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student;
   }
   @ApiOkResponse({ description: 'Student deleted' })
-  @ApiNoContentResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiInternalServerErrorResponse({ description: 'Server error' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentService.remove(id);
+  async remove(@Param('id') id: string): Promise<Student | HttpException> {
+    const student = await this.studentService.remove(id);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student;
   }
 }

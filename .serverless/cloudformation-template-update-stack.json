@@ -145,7 +145,7 @@
                     "dynamodb:UpdateItem",
                     "dynamodb:DeleteItem"
                   ],
-                  "Resource": "arn:aws:dynamodb:us-east-1:*:table/{DynamoTable}"
+                  "Resource": "arn:aws:dynamodb:us-east-1:*:table/*"
                 }
               ]
             }
@@ -174,7 +174,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/nest-serverless/dev/1670938129459-2022-12-13T13:28:49.459Z/nest-serverless.zip"
+          "S3Key": "serverless/nest-serverless/dev/1671082489262-2022-12-15T05:34:49.262Z/nest-serverless.zip"
         },
         "Handler": "dist/lambda.handler",
         "Runtime": "nodejs18.x",
@@ -198,14 +198,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersion1erBfOoRKaajpie3M9tIa4re3hxbcO4jvVmWwB7M": {
+    "AppLambdaVersionjHqFgnFn3mSVC59CpYyOtxlmTPTyTgp3GwuesA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "ngrEm6fszeX9WTGi00nxEg44vXun/UhcKMDQKnpZxqU="
+        "CodeSha256": "/nfh8vECzCQu8xbb7AjaDBLl9AfWjZM1o34fClctTrU="
       }
     },
     "ApiGatewayRestApi": {
@@ -326,7 +326,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1670938076898": {
+    "ApiGatewayDeployment1671082436206": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -411,7 +411,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersion1erBfOoRKaajpie3M9tIa4re3hxbcO4jvVmWwB7M"
+        "Ref": "AppLambdaVersionjHqFgnFn3mSVC59CpYyOtxlmTPTyTgp3GwuesA"
       },
       "Export": {
         "Name": "sls-nest-serverless-dev-AppLambdaFunctionQualifiedArn"

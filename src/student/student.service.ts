@@ -1,98 +1,54 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import * as AWS from 'aws-sdk';
 import Student from './entities/student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-
-const dynamoDB = process.env.IS_OFFLINE
-  ? new AWS.DynamoDB.DocumentClient({
-      region: 'localhost',
-      endpoint: process.env.DYNAMODB_ENDPOINT,
-    })
-  : new AWS.DynamoDB.DocumentClient();
+import { StudentDynamo } from '../db/student/crud-student';
 
 @Injectable()
 export class StudentService {
-  async create(createStudentDto: CreateStudentDto): Promise<Student | any> {
+  constructor(private readonly dynamo: StudentDynamo) {}
+  async create(createStudentDto: CreateStudentDto): Promise<Student> {
     const newObj = {
       id: uuid(),
       ...createStudentDto,
     };
-    try {
-      await dynamoDB
-        .put({
-          TableName: 'StudentsTable',
-          Item: newObj,
-        })
-        .promise();
-      return newObj;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
+    const result = await this.dynamo.putStudent(newObj);
+    return result;
   }
 
-  async findAll(): Promise<Student[] | any> {
-    try {
-      const result = await dynamoDB
-        .scan({
-          TableName: 'StudentsTable',
-        })
-        .promise();
-      return result.Items;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
+  async findAll(): Promise<Student[]> {
+    const result = await this.dynamo.scanStudent();
+    return result;
   }
 
-  async findOne(id: string): Promise<Student | any> {
-    try {
-      const result = await dynamoDB
-        .get({
-          TableName: 'StudentsTable',
-          Key: { id },
-        })
-        .promise();
-      return result.Item;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
-    }
+  async findOne(id: string): Promise<Student> {
+    const result = await this.dynamo.getStudent(id);
+    return result;
   }
 
   async update(
     id: string,
     updateStudentDto: UpdateStudentDto,
-  ): Promise<Student | any> {
-    try {
-      const obj = await this.findOne(id);
-      const newObj = {
-        ...obj,
-        ...updateStudentDto,
-      };
-      await dynamoDB
-        .put({
-          TableName: 'StudentsTable',
-          Item: newObj,
-        })
-        .promise();
-      return newObj;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
+  ): Promise<Student> {
+    const obj = await this.dynamo.getStudent(id);
+    if (obj == undefined) {
+      return obj;
     }
+    const newObj = {
+      ...obj,
+      ...updateStudentDto,
+    };
+    const result = await this.dynamo.putStudent(newObj);
+    return result;
   }
 
-  async remove(id: string): Promise<Student | any> {
-    try {
-      const obj = await this.findOne(id);
-      await dynamoDB
-        .delete({
-          TableName: 'StudentsTable',
-          Key: { id },
-        })
-        .promise();
+  async remove(id: string): Promise<Student> {
+    const obj = await this.dynamo.getStudent(id);
+    if (obj == undefined) {
       return obj;
-    } catch (e) {
-      throw new InternalServerErrorException(e);
     }
+    this.dynamo.deleteStudent(id);
+    return obj;
   }
 }

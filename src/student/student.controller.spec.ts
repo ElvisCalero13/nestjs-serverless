@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Test, TestingModule } from '@nestjs/testing';
+import { StudentDynamo } from 'src/db/student/crud-student';
 import { v4 as uuid } from 'uuid';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -11,41 +12,52 @@ describe('StudentController', () => {
   let controller: StudentController;
   let spyService: StudentService;
 
-  beforeAll(async () => {
-    const ApiServiceProvider = {
-      provide: StudentService,
-      useFactory: () => ({
-        create: jest.fn((dto: CreateStudentDto) => {
-          const result: Student = {
-            id: uuid(),
-            ...dto,
-          };
-          return result;
-        }),
-        findAll: jest.fn(() => []),
-        findOne: jest.fn(() => {}),
-        update: jest.fn((id: string, dto: UpdateStudentDto) => {
-          const result: Student = {
-            id: id,
-            dni: '',
-            name: dto.name,
-            lastname: dto.lastname,
-            career: dto.career,
-            level: dto.level,
-          };
-          return result;
-        }),
-        remove: jest.fn(() => {}),
-      }),
-    };
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StudentController],
-      providers: [StudentService, ApiServiceProvider],
-    }).compile();
+      providers: [StudentService],
+    })
+      .overrideProvider(StudentService)
+      .useValue(spyService)
+      .compile();
 
     controller = module.get<StudentController>(StudentController);
-    spyService = module.get<StudentService>(StudentService);
   });
+  // beforeAll(async () => {
+  //   const ApiServiceProvider = {
+  //     provide: StudentService,
+  //     useFactory: () => ({
+  //       create: jest.fn((dto: CreateStudentDto) => {
+  //         const result: Student = {
+  //           id: uuid(),
+  //           ...dto,
+  //         };
+  //         return result;
+  //       }),
+  //       findAll: jest.fn(() => []),
+  //       findOne: jest.fn(() => {}),
+  //       update: jest.fn((id: string, dto: UpdateStudentDto) => {
+  //         const result: Student = {
+  //           id: id,
+  //           dni: '',
+  //           name: dto.name,
+  //           lastname: dto.lastname,
+  //           career: dto.career,
+  //           level: dto.level,
+  //         };
+  //         return result;
+  //       }),
+  //       remove: jest.fn(() => {}),
+  //     }),
+  //   };
+  //   const module: TestingModule = await Test.createTestingModule({
+  //     controllers: [StudentController],
+  //     providers: [StudentService, ApiServiceProvider, StudentDynamo],
+  //   }).compile();
+
+  //   controller = module.get<StudentController>(StudentController);
+  //   spyService = module.get<StudentService>(StudentService);
+  // });
 
   it('calling create method', () => {
     const dto: CreateStudentDto = {
