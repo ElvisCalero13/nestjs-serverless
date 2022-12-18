@@ -18,9 +18,7 @@ $ npm install -g serverless
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
-
-`PORT` = 3000
+To run this project, you will need to add the following environment variables to your .env file.
 
 `API_KEY` = 12345
 
