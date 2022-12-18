@@ -14,6 +14,9 @@ Nest project integrated with the following technologies:
 ```bash
 $ npm install
 $ npm install -g serverless
+$ serverless plugin install -n serverless-plugin-optimize 
+$ serverless plugin install -n serverless-dynamodb-local 
+$ serverless plugin install -n serverless-offline
 ```
 
 ## Environment Variables
