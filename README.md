@@ -36,7 +36,7 @@ To run this project, you will need to add the following environment variables to
 $ npm run build
 
 # local
-$ serverless offline start -noPrependStageInUrl
+$ serverless offline start --noPrependStageInUrl
 
 # aws
 $ serverless deploy
